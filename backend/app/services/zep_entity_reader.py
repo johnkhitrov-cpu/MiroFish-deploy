@@ -80,12 +80,10 @@ class ZepEntityReader:
     
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or Config.ZEP_API_KEY
-        self._available = bool(self.api_key)
-        if self._available:
-            self.client = Zep(api_key=self.api_key)
-        else:
-            self.client = None
-            logger.warning("ZEP_API_KEY not set — ZepEntityReader will return empty data")
+        if not self.api_key:
+            raise ValueError("ZEP_API_KEY 未配置")
+        
+        self.client = Zep(api_key=self.api_key)
     
     def _call_with_retry(
         self, 
@@ -136,8 +134,6 @@ class ZepEntityReader:
         Returns:
             节点列表
         """
-        if not self._available:
-            return []
         logger.info(f"获取图谱 {graph_id} 的所有节点...")
 
         nodes = fetch_all_nodes(self.client, graph_id)
@@ -165,8 +161,6 @@ class ZepEntityReader:
         Returns:
             边列表
         """
-        if not self._available:
-            return []
         logger.info(f"获取图谱 {graph_id} 的所有边...")
 
         edges = fetch_all_edges(self.client, graph_id)

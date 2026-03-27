@@ -284,6 +284,8 @@ def build_graph():
         
         # 检查配置
         errors = []
+        if not Config.ZEP_API_KEY:
+            errors.append("ZEP_API_KEY未配置")
         if errors:
             logger.error(f"配置错误: {errors}")
             return jsonify({
@@ -565,6 +567,12 @@ def get_graph_data(graph_id: str):
     获取图谱数据（节点和边）
     """
     try:
+        if not Config.ZEP_API_KEY:
+            return jsonify({
+                "success": False,
+                "error": "ZEP_API_KEY未配置"
+            }), 500
+        
         builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
         graph_data = builder.get_graph_data(graph_id)
         
@@ -587,6 +595,12 @@ def delete_graph(graph_id: str):
     删除Zep图谱
     """
     try:
+        if not Config.ZEP_API_KEY:
+            return jsonify({
+                "success": False,
+                "error": "ZEP_API_KEY未配置"
+            }), 500
+        
         builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
         builder.delete_graph(graph_id)
         
