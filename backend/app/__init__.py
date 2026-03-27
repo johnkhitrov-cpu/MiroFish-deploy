@@ -18,7 +18,13 @@ from .utils.logger import setup_logger, get_logger
 
 def create_app(config_class=Config):
     """Flask应用工厂函数"""
-    app = Flask(__name__)
+    # Serve frontend static files from built dist directory
+    import os as _os
+    _dist_dir = _os.path.join(_os.path.dirname(__file__), '../../frontend/dist')
+    if _os.path.isdir(_dist_dir):
+        app = Flask(__name__, static_folder=_os.path.abspath(_dist_dir), static_url_path='')
+    else:
+        app = Flask(__name__)
     app.config.from_object(config_class)
     
     # 设置JSON编码：确保中文直接显示（而不是 \uXXXX 格式）
@@ -75,6 +81,22 @@ def create_app(config_class=Config):
     
     if should_log_startup:
         logger.info("MiroFish Backend 启动完成")
+    
+    # SPA catch-all: serve index.html for non-API routes
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_spa(path):
+        import os as _os
+        from flask import send_from_directory
+        dist_dir = app.static_folder
+        if dist_dir and _os.path.isdir(dist_dir):
+            file_path = _os.path.join(dist_dir, path)
+            if path and _os.path.isfile(file_path):
+                return send_from_directory(dist_dir, path)
+            index = _os.path.join(dist_dir, 'index.html')
+            if _os.path.isfile(index):
+                return send_from_directory(dist_dir, 'index.html')
+        return {'error': 'Frontend not built. Run: cd frontend && npm run build'}, 404
     
     return app
 

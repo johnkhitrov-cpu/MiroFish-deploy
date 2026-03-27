@@ -44,11 +44,12 @@ class GraphBuilderService:
     
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or Config.ZEP_API_KEY
-        if not self.api_key:
-            raise ValueError("ZEP_API_KEY 未配置")
-        
-        self.client = Zep(api_key=self.api_key)
+        self._available = bool(self.api_key)
         self.task_manager = TaskManager()
+        if self._available:
+            self.client = Zep(api_key=self.api_key)
+        else:
+            self.client = None
     
     def build_graph_async(
         self,

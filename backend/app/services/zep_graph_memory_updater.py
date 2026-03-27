@@ -238,11 +238,13 @@ class ZepGraphMemoryUpdater:
         """
         self.graph_id = graph_id
         self.api_key = api_key or Config.ZEP_API_KEY
+        self._available = bool(self.api_key)
         
-        if not self.api_key:
-            raise ValueError("ZEP_API_KEY未配置")
-        
-        self.client = Zep(api_key=self.api_key)
+        if self._available:
+            self.client = Zep(api_key=self.api_key)
+        else:
+            self.client = None
+            logger.warning("ZEP_API_KEY not set — ZepGraphMemoryUpdater will be a no-op")
         
         # 活动队列
         self._activity_queue: Queue = Queue()
@@ -273,7 +275,7 @@ class ZepGraphMemoryUpdater:
     
     def start(self):
         """启动后台工作线程"""
-        if self._running:
+        if not self._available or self._running:
             return
         
         self._running = True
@@ -323,6 +325,8 @@ class ZepGraphMemoryUpdater:
         Args:
             activity: Agent活动记录
         """
+        if not self._available:
+            return
         # 跳过DO_NOTHING类型的活动
         if activity.action_type == "DO_NOTHING":
             self._skipped_count += 1
