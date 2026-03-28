@@ -394,7 +394,42 @@ class TwitterSimulationRunner:
         ActionType.DO_NOTHING,
         ActionType.QUOTE_POST,
     ]
-    
+
+# === Monkey-patch: заставляем OASIS-агентов писать на русском ===
+try:
+    from oasis.social_agent.agent import SocialAgent
+    from camel.messages import BaseMessage
+    import logging as _mp_logging
+    _agent_log = _mp_logging.getLogger('oasis.agent')
+
+    async def _russian_perform_action(self):
+        env_prompt = await self.env.to_text_prompt()
+        user_msg = BaseMessage.make_user_message(
+            role_name="User",
+            content=(
+                "Выполни действия в социальной сети, изучив текущую обстановку на платформе. "
+                "Не ограничивайся только лайками — создавай посты, комментируй, делай репосты. "
+                "ВАЖНО: Весь контент (посты, комментарии, цитаты) пиши ТОЛЬКО на русском языке. "
+                f"Вот текущая обстановка на платформе: {env_prompt}"
+            ),
+        )
+        try:
+            _agent_log.info(f"Agent {self.social_agent_id} observing environment: {env_prompt}")
+            response = await self.astep(user_msg)
+            for tool_call in response.info.get('tool_calls', []):
+                action_name = tool_call.tool_name
+                args = tool_call.args
+                _agent_log.info(f"Agent {self.social_agent_id} performed action: {action_name} with args: {args}")
+                return response
+        except Exception as e:
+            _agent_log.error(f"Agent {self.social_agent_id} error: {e}")
+            return e
+
+    SocialAgent.perform_action_by_llm = _russian_perform_action
+except Exception as e:
+    print(f'[warn] Не удалось пропатчить OASIS для русского языка: {e}')
+# === Конец monkey-patch ===
+
     def __init__(self, config_path: str, wait_for_commands: bool = True):
         """
         初始化模拟运行器
