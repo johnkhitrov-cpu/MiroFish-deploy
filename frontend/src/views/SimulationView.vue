@@ -22,7 +22,7 @@
 
       <div class="header-right">
         <div class="workflow-step">
-          <span class="step-num">Step 2/5</span>
+          <span class="step-num">Шаг 2/5</span>
           <span class="step-name">Настройка среды</span>
         </div>
         <div class="step-divider"></div>
@@ -109,9 +109,9 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Ready'
-  return 'Preparing'
+  if (currentStatus.value === 'error') return 'Ошибка'
+  if (currentStatus.value === 'completed') return 'Готово'
+  return 'Подготовка'
 })
 
 // --- Helpers ---
@@ -146,7 +146,7 @@ const handleGoBack = () => {
 }
 
 const handleNextStep = (params = {}) => {
-  addLog('Переход к Step 3: Запуск симуляции')
+  addLog('Переход к шагу 3: Запуск симуляции')
   
   // Запись настройки количества раундов симуляции
   if (params.maxRounds) {

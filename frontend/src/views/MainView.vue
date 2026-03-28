@@ -22,7 +22,7 @@
 
       <div class="header-right">
         <div class="workflow-step">
-          <span class="step-num">Step {{ currentStep }}/5</span>
+          <span class="step-num">Шаг {{ currentStep }}/5</span>
           <span class="step-name">{{ stepNames[currentStep - 1] }}</span>
         </div>
         <div class="step-divider"></div>
@@ -130,11 +130,11 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (error.value) return 'Error'
-  if (currentPhase.value >= 2) return 'Ready'
-  if (currentPhase.value === 1) return 'Building Graph'
-  if (currentPhase.value === 0) return 'Generating Ontology'
-  return 'Initializing'
+  if (error.value) return 'Ошибка'
+  if (currentPhase.value >= 2) return 'Готово'
+  if (currentPhase.value === 1) return 'Построение графа'
+  if (currentPhase.value === 0) return 'Генерация онтологии'
+  return 'Инициализация'
 })
 
 // --- Helpers ---
@@ -159,7 +159,7 @@ const toggleMaximize = (target) => {
 const handleNextStep = (params = {}) => {
   if (currentStep.value < 5) {
     currentStep.value++
-    addLog(`Переход к Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
+    addLog(`Переход к шагу ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
     
     // Если переход из Step 2 в Step 3, записать конфигурацию раундов симуляции
     if (currentStep.value === 3 && params.maxRounds) {
@@ -171,14 +171,14 @@ const handleNextStep = (params = {}) => {
 const handleGoBack = () => {
   if (currentStep.value > 1) {
     currentStep.value--
-    addLog(`Возврат к Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
+    addLog(`Возврат к шагу ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
   }
 }
 
 // --- Data Logic ---
 
 const initProject = async () => {
-  addLog('Project view initialized.')
+  addLog('Представление проекта инициализировано.')
   if (currentProjectId.value === 'new') {
     await handleNewProject()
   } else {
@@ -189,16 +189,16 @@ const initProject = async () => {
 const handleNewProject = async () => {
   const pending = getPendingUpload()
   if (!pending.isPending || pending.files.length === 0) {
-    error.value = 'No pending files found.'
-    addLog('Error: No pending files found for new project.')
+    error.value = 'Нет ожидающих файлов.'
+    addLog('Ошибка: Нет ожидающих файлов для нового проекта.')
     return
   }
   
   try {
     loading.value = true
     currentPhase.value = 0
-    ontologyProgress.value = { message: 'Uploading and analyzing docs...' }
-    addLog('Starting ontology generation: Uploading files...')
+    ontologyProgress.value = { message: 'Загрузка и анализ документов...' }
+    addLog('Начало генерации онтологии: Загрузка файлов...')
     
     const formData = new FormData()
     pending.files.forEach(f => formData.append('files', f))
@@ -212,15 +212,15 @@ const handleNewProject = async () => {
       
       router.replace({ name: 'Process', params: { projectId: res.data.project_id } })
       ontologyProgress.value = null
-      addLog(`Ontology generated successfully for project ${res.data.project_id}`)
+      addLog(`Онтология успешно сгенерирована для проекта ${res.data.project_id}`)
       await startBuildGraph()
     } else {
-      error.value = res.error || 'Ontology generation failed'
-      addLog(`Error generating ontology: ${error.value}`)
+      error.value = res.error || 'Ошибка генерации онтологии'
+      addLog(`Ошибка генерации онтологии: ${error.value}`)
     }
   } catch (err) {
     error.value = err.message
-    addLog(`Exception in handleNewProject: ${err.message}`)
+    addLog(`Исключение в функции handleNewProject: ${err.message}`)
   } finally {
     loading.value = false
   }
@@ -229,12 +229,12 @@ const handleNewProject = async () => {
 const loadProject = async () => {
   try {
     loading.value = true
-    addLog(`Loading project ${currentProjectId.value}...`)
+    addLog(`Загрузка проекта ${currentProjectId.value}...`)
     const res = await getProject(currentProjectId.value)
     if (res.success) {
       projectData.value = res.data
       updatePhaseByStatus(res.data.status)
-      addLog(`Project loaded. Status: ${res.data.status}`)
+      addLog(`Проект загружен. Статус: ${res.data.status}`)
       
       if (res.data.status === 'ontology_generated' && !res.data.graph_id) {
         await startBuildGraph()
@@ -248,11 +248,11 @@ const loadProject = async () => {
       }
     } else {
       error.value = res.error
-      addLog(`Error loading project: ${res.error}`)
+      addLog(`Ошибка загрузки проекта: ${res.error}`)
     }
   } catch (err) {
     error.value = err.message
-    addLog(`Exception in loadProject: ${err.message}`)
+    addLog(`Исключение в функции loadProject: ${err.message}`)
   } finally {
     loading.value = false
   }
@@ -264,33 +264,33 @@ const updatePhaseByStatus = (status) => {
     case 'ontology_generated': currentPhase.value = 0; break;
     case 'graph_building': currentPhase.value = 1; break;
     case 'graph_completed': currentPhase.value = 2; break;
-    case 'failed': error.value = 'Project failed'; break;
+    case 'failed': error.value = 'Ошибка проекта'; break;
   }
 }
 
 const startBuildGraph = async () => {
   try {
     currentPhase.value = 1
-    buildProgress.value = { progress: 0, message: 'Starting build...' }
-    addLog('Initiating graph build...')
+    buildProgress.value = { progress: 0, message: 'Запуск построения...' }
+    addLog('Запуск построения графа...')
     
     const res = await buildGraph({ project_id: currentProjectId.value })
     if (res.success) {
-      addLog(`Graph build task started. Task ID: ${res.data.task_id}`)
+      addLog(`Задача построения графа запущена. ID задачи: ${res.data.task_id}`)
       startGraphPolling()
       startPollingTask(res.data.task_id)
     } else {
       error.value = res.error
-      addLog(`Error starting build: ${res.error}`)
+      addLog(`Ошибка запуска построения: ${res.error}`)
     }
   } catch (err) {
     error.value = err.message
-    addLog(`Exception in startBuildGraph: ${err.message}`)
+    addLog(`Исключение в функции startBuildGraph: ${err.message}`)
   }
 }
 
 const startGraphPolling = () => {
-  addLog('Started polling for graph data...')
+  addLog('Запущен опрос данных графа...')
   fetchGraphData()
   graphPollTimer = setInterval(fetchGraphData, 10000)
 }
@@ -305,7 +305,7 @@ const fetchGraphData = async () => {
         graphData.value = gRes.data
         const nodeCount = gRes.data.node_count || gRes.data.nodes?.length || 0
         const edgeCount = gRes.data.edge_count || gRes.data.edges?.length || 0
-        addLog(`Graph data refreshed. Nodes: ${nodeCount}, Edges: ${edgeCount}`)
+        addLog(`Данные графа обновлены. Узлов: ${nodeCount}, Связей: ${edgeCount}`)
       }
     }
   } catch (err) {
@@ -332,7 +332,7 @@ const pollTaskStatus = async (taskId) => {
       buildProgress.value = { progress: task.progress || 0, message: task.message }
       
       if (task.status === 'completed') {
-        addLog('Graph build task completed.')
+        addLog('Задача построения графа завершена.')
         stopPolling()
         stopGraphPolling() // Stop polling, do final load
         currentPhase.value = 2
@@ -346,7 +346,7 @@ const pollTaskStatus = async (taskId) => {
       } else if (task.status === 'failed') {
         stopPolling()
         error.value = task.error
-        addLog(`Graph build task failed: ${task.error}`)
+        addLog(`Задача построения графа провалена: ${task.error}`)
       }
     }
   } catch (e) {
@@ -356,17 +356,17 @@ const pollTaskStatus = async (taskId) => {
 
 const loadGraph = async (graphId) => {
   graphLoading.value = true
-  addLog(`Loading full graph data: ${graphId}`)
+  addLog(`Загрузка полных данных графа: ${graphId}`)
   try {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('Graph data loaded successfully.')
+      addLog('Данные графа успешно загружены.')
     } else {
-      addLog(`Failed to load graph data: ${res.error}`)
+      addLog(`Не удалось загрузить данные графа: ${res.error}`)
     }
   } catch (e) {
-    addLog(`Exception loading graph: ${e.message}`)
+    addLog(`Исключение при загрузке графа: ${e.message}`)
   } finally {
     graphLoading.value = false
   }
@@ -374,7 +374,7 @@ const loadGraph = async (graphId) => {
 
 const refreshGraph = () => {
   if (projectData.value?.graph_id) {
-    addLog('Manual graph refresh triggered.')
+    addLog('Ручное обновление графа запущено.')
     loadGraph(projectData.value.graph_id)
   }
 }
@@ -390,7 +390,7 @@ const stopGraphPolling = () => {
   if (graphPollTimer) {
     clearInterval(graphPollTimer)
     graphPollTimer = null
-    addLog('Graph polling stopped.')
+    addLog('Опрос графа остановлен.')
   }
 }
 

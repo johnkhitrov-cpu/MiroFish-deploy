@@ -22,7 +22,7 @@
 
       <div class="header-right">
         <div class="workflow-step">
-          <span class="step-num">Step 4/5</span>
+          <span class="step-num">Шаг 4/5</span>
           <span class="step-name">Генерация отчёта</span>
         </div>
         <div class="step-divider"></div>
@@ -109,9 +109,9 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Completed'
-  return 'Generating'
+  if (currentStatus.value === 'error') return 'Ошибка'
+  if (currentStatus.value === 'completed') return 'Завершено'
+  return 'Генерация'
 })
 
 // --- Helpers ---

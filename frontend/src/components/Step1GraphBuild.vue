@@ -31,7 +31,7 @@
           <div v-if="selectedOntologyItem" class="ontology-detail-overlay">
             <div class="detail-header">
                <div class="detail-title-group">
-                  <span class="detail-type-badge">{{ selectedOntologyItem.itemType === 'entity' ? 'ENTITY' : 'RELATION' }}</span>
+                  <span class="detail-type-badge">{{ selectedOntologyItem.itemType === 'entity' ? 'СУЩНОСТЬ' : 'СВЯЗЬ' }}</span>
                   <span class="detail-name">{{ selectedOntologyItem.name }}</span>
                </div>
                <button class="close-btn" @click="selectedOntologyItem = null">×</button>
@@ -41,7 +41,7 @@
                
                <!-- Attributes -->
                <div class="detail-section" v-if="selectedOntologyItem.attributes?.length">
-                  <span class="section-label">ATTRIBUTES</span>
+                  <span class="section-label">АТРИБУТЫ</span>
                   <div class="attr-list">
                      <div v-for="attr in selectedOntologyItem.attributes" :key="attr.name" class="attr-item">
                         <span class="attr-name">{{ attr.name }}</span>
@@ -53,7 +53,7 @@
 
                <!-- Examples (Entity) -->
                <div class="detail-section" v-if="selectedOntologyItem.examples?.length">
-                  <span class="section-label">EXAMPLES</span>
+                  <span class="section-label">ПРИМЕРЫ</span>
                   <div class="example-list">
                      <span v-for="ex in selectedOntologyItem.examples" :key="ex" class="example-tag">{{ ex }}</span>
                   </div>
@@ -61,7 +61,7 @@
 
                <!-- Source/Target (Relation) -->
                <div class="detail-section" v-if="selectedOntologyItem.source_targets?.length">
-                  <span class="section-label">CONNECTIONS</span>
+                  <span class="section-label">СВЯЗИ</span>
                   <div class="conn-list">
                      <div v-for="(conn, idx) in selectedOntologyItem.source_targets" :key="idx" class="conn-item">
                         <span class="conn-node">{{ conn.source }}</span>
@@ -75,7 +75,7 @@
 
           <!-- Generated Entity Tags -->
           <div v-if="projectData?.ontology?.entity_types" class="tags-container" :class="{ 'dimmed': selectedOntologyItem }">
-            <span class="tag-label">GENERATED ENTITY TYPES</span>
+            <span class="tag-label">СГЕНЕРИРОВАННЫЕ ТИПЫ СУЩНОСТЕЙ</span>
             <div class="tags-list">
               <span 
                 v-for="entity in projectData.ontology.entity_types" 
@@ -90,7 +90,7 @@
 
           <!-- Generated Relation Tags -->
           <div v-if="projectData?.ontology?.edge_types" class="tags-container" :class="{ 'dimmed': selectedOntologyItem }">
-            <span class="tag-label">GENERATED RELATION TYPES</span>
+            <span class="tag-label">СГЕНЕРИРОВАННЫЕ ТИПЫ СВЯЗЕЙ</span>
             <div class="tags-list">
               <span 
                 v-for="rel in projectData.ontology.edge_types" 
@@ -137,7 +137,7 @@
             </div>
             <div class="stat-card">
               <span class="stat-value">{{ graphStats.types }}</span>
-              <span class="stat-label">Типы SCHEMA</span>
+              <span class="stat-label">Типы схемы</span>
             </div>
           </div>
         </div>
@@ -173,8 +173,8 @@
     <!-- Bottom Info / Logs -->
     <div class="system-logs">
       <div class="log-header">
-        <span class="log-title">SYSTEM DASHBOARD</span>
-        <span class="log-id">{{ projectData?.project_id || 'NO_PROJECT' }}</span>
+        <span class="log-title">СИСТЕМНАЯ ПАНЕЛЬ</span>
+        <span class="log-id">{{ projectData?.project_id || 'НЕТ_ПРОЕКТА' }}</span>
       </div>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in systemLogs" :key="idx">

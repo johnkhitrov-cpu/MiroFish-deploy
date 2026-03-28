@@ -22,7 +22,7 @@
 
       <div class="header-right">
         <div class="workflow-step">
-          <span class="step-num">Step 3/5</span>
+          <span class="step-num">Шаг 3/5</span>
           <span class="step-name">Запуск симуляции</span>
         </div>
         <div class="step-divider"></div>
@@ -115,9 +115,9 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Completed'
-  return 'Running'
+  if (currentStatus.value === 'error') return 'Ошибка'
+  if (currentStatus.value === 'completed') return 'Завершено'
+  return 'Выполняется'
 })
 
 const isSimulating = computed(() => currentStatus.value === 'processing')
@@ -146,7 +146,7 @@ const toggleMaximize = (target) => {
 
 const handleGoBack = async () => {
   // Перед возвратом к Step 2 закрываем запущенную симуляцию
-  addLog('Подготовка к возврату на Step 2, закрытие симуляции...')
+  addLog('Подготовка к возврату на шаг 2, закрытие симуляции...')
   
   // Остановка опроса
   stopGraphRefresh()
@@ -195,7 +195,7 @@ const handleGoBack = async () => {
 const handleNextStep = () => {
   // Компонент Step3Simulation сам обрабатывает генерацию отчёта и навигацию
   // Этот метод только как запасной
-  addLog('Переход к Step 4: Генерация отчёта')
+  addLog('Переход к шагу 4: Генерация отчёта')
 }
 
 // --- Data Logic ---

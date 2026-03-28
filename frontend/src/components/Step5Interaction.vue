@@ -8,7 +8,7 @@
           <!-- Report Header -->
           <div class="report-header-block">
             <div class="report-meta">
-              <span class="report-tag">Prediction Report</span>
+              <span class="report-tag">Прогнозный отчёт</span>
               <span class="report-id">ID: {{ reportId || 'REF-2024-X92' }}</span>
             </div>
             <h1 class="main-title">{{ reportOutline.title }}</h1>
@@ -72,7 +72,7 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Waiting for Report Agent...</span>
+          <span class="waiting-text">Ожидание Report Agent...</span>
         </div>
       </div>
 
@@ -85,8 +85,8 @@
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           <div class="action-bar-text">
-            <span class="action-bar-title">Interactive Tools</span>
-            <span class="action-bar-subtitle mono">{{ profiles.length }} agents available</span>
+            <span class="action-bar-title">Интерактивные инструменты</span>
+            <span class="action-bar-subtitle mono">{{ profiles.length }} агентов доступно</span>
           </div>
         </div>
           <div class="action-bar-tabs">
@@ -154,7 +154,7 @@
             <div class="tools-card-header">
               <div class="tools-card-avatar">R</div>
               <div class="tools-card-info">
-                <div class="tools-card-name">Report Agent - Chat</div>
+                <div class="tools-card-name">Report Agent — Чат</div>
                 <div class="tools-card-subtitle">Быстрая диалоговая версия агента генерации отчётов с 4 специализированными инструментами и полной памятью MiroFish</div>
               </div>
               <button class="tools-card-toggle" @click="showToolsDetail = !showToolsDetail">
@@ -266,7 +266,7 @@
               <div class="message-content">
                 <div class="message-header">
                   <span class="sender-name">
-                    {{ msg.role === 'user' ? 'You' : (chatTarget === 'report_agent' ? 'Report Agent' : (selectedAgent?.username || 'Agent')) }}
+                    {{ msg.role === 'user' ? 'Вы' : (chatTarget === 'report_agent' ? 'Report Agent' : (selectedAgent?.username || 'Agent')) }}
                   </span>
                   <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
                 </div>
